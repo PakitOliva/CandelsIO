@@ -1,0 +1,28 @@
+table {
+  border-spacing: 10px;
+}
+
+td {
+  text-align: center; /* Centra el contenido en las celdas */
+  vertical-align: middle; /* Centra verticalmente el contenido en las celdas */
+}
+
+.led {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: red; /* Puedes cambiar el color para representar el LED encendido o apagado */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  transition: background-color 0.3s ease-in-out;
+  display: inline-block; /* Permite centrar verticalmente en la celda */
+}
+
+/* Estilo cuando el LED está encendido */
+.led.encendido {
+  background-color: green; /* Puedes cambiar el color para representar el LED encendido */
+}
+
+span {
+  display: block; /* Coloca el texto debajo del LED */
+  margin-top: 5px; /* Ajusta el espacio entre el LED y el texto */
+}
