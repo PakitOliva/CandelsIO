@@ -4,10 +4,15 @@ function llenarTabla() {
 	var tbody = tabla.getElementsByTagName("tbody")[0];
 	var jsonData;
 
+	const queryString = window.location.search;
+	const urlParams = new URLSearchParams(queryString);
+	const deviceId = urlParams.get('id');
+	const deviceNum = urlParams.get('num');
+
 	// Crear una instancia de XMLHttpRequest
 	var xhr = new XMLHttpRequest();
 	// URL
-	var url = '/getChandelier?id=853259969&num=1';
+	var url = '/getChandelier?id='+deviceId+'&num='+deviceNum;
 	// Configurar la petición
 	xhr.open('GET', url, true);
 	// Configurar la función de callback para manejar la respuesta

@@ -5,6 +5,8 @@
 #include "MeshComm.h"
 #include "WebApp.h"
 #include <typeinfo>
+#include <DNSServer.h>
+
 
 // Status LED
 const int LED_RED_PIN = 32;
@@ -14,6 +16,7 @@ const int LED_BLUE_PIN = 25;
 vector<Module *> modules;
 MeshComm comm(modules);
 WebApp webApp(&comm);
+DNSServer dnsServer;
 
 Ticker periodicTicker;
 void processModules();
@@ -33,12 +36,16 @@ void setup()
 
   periodicTicker.attach_ms(500, processModules);
   webApp.Init();
+
+  dnsServer.start(53, "*", WiFi.softAPIP());
 }
 
 void loop()
 {
   // it will run the user scheduler as well
   comm.mesh.update();
+  dnsServer.processNextRequest();
+
 }
 
 void processModules()

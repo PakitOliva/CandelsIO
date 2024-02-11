@@ -2,6 +2,7 @@
 #include "AsyncJson.h"
 #include "ArduinoJson.h"
 #include "Chandelier.h"
+#include "CaptiveRequestHandler.h"
 
 void WebApp::Init()
 {
@@ -125,6 +126,9 @@ void WebApp::Init()
                     serializeJson(modulesJson, Serial);
                     response->setLength();
                     request->send(response); });
+
+    webServer->addHandler(new CaptiveRequestHandler()).setFilter(ON_AP_FILTER);//only when requested from AP
+
 
     // Start server
     webServer->begin();
