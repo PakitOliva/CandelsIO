@@ -77,6 +77,10 @@ void MeshComm::receivedCallback(uint32_t from, String &msg)
     {
         ProcessInfoMsg(from, msg);
     }
+    else if (msg.indexOf("SetCommand") != -1)
+    {
+        ProcessCommandMsg(from, msg);
+    }
     else
     {
         Serial.print("***** No se Reconoce el mensaje: " + msg + " \n");
@@ -271,13 +275,13 @@ void MeshComm::ProcessInfoMsg(uint32_t from, String &msg)
         if (Chandelier *chandelier = dynamic_cast<Chandelier *>(moduleProccess))
         {
             JsonArray chandeliersModuleJson = modulesJson[i]["chandelier"].as<JsonArray>();
-            for (std::size_t j = 0; j < min(chandeliersModuleJson.size(),chandelier->chandelierModules.size()); j++)
+            for (std::size_t j = 0; j < min(chandeliersModuleJson.size(), chandelier->chandelierModules.size()); j++)
             {
                 JsonArray chandelierModuleJson = chandeliersModuleJson[j].as<JsonArray>();
                 for (std::size_t k = 0; k < min(chandelierModuleJson.size(), chandelier->chandelierModules[j]->NUM_LIGHTS); k++)
                 {
                     // Puedes asignar valores específicos a cada elemento de la matriz aquí
-                    chandelier->chandelierModules[j]->SetIdxLightStatus(k,chandelierModuleJson[k].as<uint32_t>());
+                    chandelier->chandelierModules[j]->SetIdxLightStatus(k, chandelierModuleJson[k].as<uint32_t>());
                 }
             }
         }
@@ -316,4 +320,72 @@ void MeshComm::ProcessAmountMsg(uint32_t from, String &msg)
             buffReceived.push_back(msgComm);
         }
     }*/
+}
+
+void MeshComm::SendCommand(MyCommand &command)
+{
+    JsonDocument jsonCommand;
+    jsonCommand["command"] = "SetCommand";
+    jsonCommand["deviceID"] = command.DeviceID;
+    jsonCommand["moduleID"] = command.ModuleID;
+
+    if (TestChandelierModuleCommand *testCommand = dynamic_cast<TestChandelierModuleCommand *>(&command))
+    {
+        jsonCommand["typeName"] = typeid(TestChandelierModuleCommand).name();
+        jsonCommand["chandelierModuleID"] = testCommand->ChandelierModuleID;
+    }
+
+    String jsonStr;
+    serializeJson(jsonCommand, jsonStr);
+    if (!mesh.sendSingle(command.DeviceID, jsonStr))
+    {
+        Serial.print("Error mandando el mensaje de Command: " + jsonStr + "\n");
+    }
+
+    for (size_t i = 0; i < modules.size(); i++)
+    {
+        if (!mesh.isConnected(modules[i]->LocalDeviceID) && modules[i]->LocalDeviceID != mesh.getNodeId())
+        {
+            modules.erase(modules.begin() + i);
+        }
+    }
+}
+
+void MeshComm::ProcessCommandMsg(uint32_t from, String &msg)
+{
+    // Interpretamos el JSON
+    JsonDocument doc;
+    DeserializationError error = deserializeJson(doc, msg);
+    if (error)
+    {
+        return;
+    }
+
+    uint32_t deviceID = doc["deviceID"].as<uint32_t>();
+    int moduleID = doc["moduleID"].as<int>();
+    String typeName = doc["typeName"].as<String>();
+
+    if (typeName == typeid(TestChandelierModuleCommand).name())
+    {
+        int chandelierModuleID = doc["chandelierModuleID"].as<int>();
+
+        for (size_t j = 0; j < modules.size(); j++)
+        {
+            if (modules[j]->LocalDeviceID == deviceID && modules[j]->LocalModuleID == moduleID)
+            {
+                if (Chandelier *chandelier = dynamic_cast<Chandelier *>(modules[j]))
+                {
+                    for (std::size_t j = 0; j < chandelier->chandelierModules.size(); j++)
+                    {
+                        if (chandelier->chandelierModules[j]->ID == chandelierModuleID)
+                        {
+                            chandelier->chandelierModules[j]->ToggleTestMode();
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
 }

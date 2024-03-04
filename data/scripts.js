@@ -27,7 +27,7 @@ function llenarTabla() {
 				var ipStation = fila.insertCell(3);
 		
 				celdaId.innerHTML = modules[i].name;
-				celdaNombre.innerHTML = "<a href=\"http://"+modules[i].url+"\">Conectarse</a>";
+				celdaNombre.innerHTML = "<a href=\""+modules[i].url+"\">Conectarse</a>";
 				ipAP.innerHTML = modules[i].ipAddr;
 				ipStation.innerHTML = modules[i].stationIpAddr;
 				// Añade más celdas según la estructura de tu JSON

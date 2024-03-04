@@ -76,7 +76,11 @@ void processModules()
       }
       // return the latch pin high to signal chip that it
       // no longer needs to listen for information
+      delayMicroseconds(20);
       digitalWrite(chandelier->LATCH_PIN, HIGH); // pull the latchPin to save the data
+      delayMicroseconds(20);
+      digitalWrite(chandelier->LATCH_PIN, LOW); // pull the latchPin to save the data
+
       vector<MsgComm> listMsgs = comm.GetQueueMessage();
       for (int i = 0; i < listMsgs.size(); i++)
       {
@@ -92,7 +96,7 @@ void processModules()
       }
       if (allOff)
       {
-        chandelier->SetLightsOn(2);
+        chandelier->SetLightsOn(5);
       }
     }
     else
@@ -105,11 +109,11 @@ void processModules()
 void readConfigModules()
 {
   Device deviceInstance = Device(comm.mesh.getNodeId());
-  /**/
+  /*
   Wallet *wallet1 = new Wallet(deviceInstance, 1, 27);
   wallet1->SetRemoteDevice(853259969, 1);
   /**/
-  /*
+  /**/
   Chandelier *wallet1 = new Chandelier(deviceInstance, 1, 27, 14, 13);
   wallet1->SetRemoteDevice(853258853, 1);
   /**/

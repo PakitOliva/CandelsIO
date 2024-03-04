@@ -6,13 +6,13 @@ function llenarTabla() {
 
 	const queryString = window.location.search;
 	const urlParams = new URLSearchParams(queryString);
-	const deviceId = urlParams.get('id');
-	const deviceNum = urlParams.get('num');
+	const deviceId = urlParams.get('idDevice');
+	const deviceNum = urlParams.get('numDevice');
 
 	// Crear una instancia de XMLHttpRequest
 	var xhr = new XMLHttpRequest();
 	// URL
-	var url = '/getChandelier?id='+deviceId+'&num='+deviceNum;
+	var url = '/getChandelier?idDevice='+deviceId+'&numDevice='+deviceNum;
 	// Configurar la petición
 	xhr.open('GET', url, true);
 	// Configurar la función de callback para manejar la respuesta
@@ -41,26 +41,27 @@ function llenarTabla() {
 				var row = tbody.rows[i];
 				var module = modules[i];
 
-				if (module.length > row.cells.length) {
+				if ((module.length + 1) > row.cells.length) {
 					//Si nos faltan celdas, añadimos
-					var numCells = module.length - row.cells.length;
+					var numCells = module.length - row.cells.length + 1;
 					for (var j = 0; j < numCells; j++) {
 						row.insertCell();
 					}
-				} else if (module.length < row.cells.length) {
+				} else if ((module.length+1) < row.cells.length) {
 					//Si nos sobran celdas, las eliminamos
-					var numCells = row.cells.length - module.length;
+					var numCells = row.cells.length - module.length + 1;
 					for (var j = 0; j < numCells; j++) {
 						row.deleteCell(0);
 					}
 				}
 
-				for (var j = 0; j < row.cells.length; j++) {
+				for (var j = 0; j < row.cells.length-1; j++) {
 					if (module[j] > 0)
 						row.cells[j].innerHTML = "<div class=\"led encendido\"></div> <span> " + module[j] + " seg.</span>";
 					else
 						row.cells[j].innerHTML = "<div class=\"led\"></div>";
 				}
+				row.cells[row.cells.length-1].innerHTML = "<button onclick=\"toggleTestMode("+i+")\"> Test Mode </button>";
 			}
 
 		} else {
@@ -84,3 +85,20 @@ setInterval(llenarTabla,1000);
 
 // Llama a la función para llenar la tabla al cargar la página
 window.onload = llenarTabla;
+
+function toggleTestMode(numModule){
+	const queryString = window.location.search;
+	const urlParams = new URLSearchParams(queryString);
+	const deviceId = urlParams.get('idDevice');
+	const deviceNum = urlParams.get('numDevice');
+
+	// Crear una instancia de XMLHttpRequest
+	var xhr = new XMLHttpRequest();
+	// URL
+	var url = '/setTestChandelierModule?idDevice='+deviceId+'&numDevice='+deviceNum+'&numModule='+numModule;
+	// Configurar la petición
+	xhr.open('GET', url, true);
+	
+	// Enviar la petición
+	xhr.send();
+}

@@ -14,6 +14,7 @@ public:
 
 private:
     static String processor(const String &var);
+    void setUpCaptiveRedirect() ;
     AsyncWebServer *webServer;
     MeshComm *comm;
 };

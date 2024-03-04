@@ -10,6 +10,8 @@ ChandelierModule::ChandelierModule(int id, int dataPin, int clockPin) : ID(id), 
 
 uint8_t ChandelierModule::GetLightsStatus()
 {
+    if(testModeOn) return 0xFF;
+    
     uint8_t status = 0;
     for (int i = 0; i < NUM_LIGHTS; ++i)
     {
@@ -21,6 +23,8 @@ uint8_t ChandelierModule::GetLightsStatus()
 
 uint32_t ChandelierModule::GetLightStatus(int idx)
 {
+     if(testModeOn) return 999999;
+
     if (idx >= NUM_LIGHTS || idx < 0)
     {
         return -1;
@@ -65,7 +69,7 @@ void ChandelierModule::SetOneLight()
             offLights.push_back(lights[i]);
     }
     int idxOffLights = rand() % offLights.size();
-    offLights[idxOffLights]->start(120500); // 2 minutos
+    offLights[idxOffLights]->start(900500); // 15 minutos
 }
 
 void ChandelierModule::shiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t val)
@@ -80,8 +84,12 @@ void ChandelierModule::shiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOr
             digitalWrite(dataPin, !!(val & (1 << (7 - i))));
 
         digitalWrite(clockPin, HIGH);
-        delayMicroseconds(10);
+        delayMicroseconds(20);
         digitalWrite(clockPin, LOW);
-        delayMicroseconds(10);
+        delayMicroseconds(20);
     }
+}
+
+void ChandelierModule::ToggleTestMode(){
+    testModeOn = !testModeOn;
 }

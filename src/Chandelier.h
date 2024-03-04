@@ -23,8 +23,7 @@ public:
 
     String UrlStatus() override
     {
-        String resultado = "/chandelier.html?id=" + LocalDeviceID;
-        resultado.concat("&num=" + LocalModuleID);
+        String resultado = "/chandelier.html?idDevice=" + String(LocalDeviceID)+"&numDevice=" + String(LocalModuleID);
         return resultado;
     }
 

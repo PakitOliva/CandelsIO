@@ -23,6 +23,7 @@ public:
     void SetOneLight();
     uint32_t GetLightStatus(int idx);
     void SetIdxLightStatus(int idx, uint32_t value);
+    void ToggleTestMode();
 
 private:
     int amount = 0;
@@ -30,5 +31,6 @@ private:
 
     uint8_t GetLightsStatus();
     void shiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t val);
+    bool testModeOn=false;
 };
 #endif

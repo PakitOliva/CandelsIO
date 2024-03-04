@@ -7,6 +7,7 @@
 #include <Ticker.h>
 #include <Timeout.h>
 #include "Module.h"
+#include "Commands/TestChandelierModuleCommand.h"
 
 // Mesh
 #define MESH_PREFIX "whateverYouLike"
@@ -28,7 +29,8 @@ class MeshComm
 {
 
 public:
-    MeshComm(vector<Module *> &mod): modules(mod){
+    MeshComm(vector<Module *> &mod) : modules(mod)
+    {
     }
 
     void EnqueueMessage(uint32_t remoteDevice, int remoteID, int amount);
@@ -42,6 +44,8 @@ public:
     void changedConnectionCallback();
     void nodeTimeAdjustedCallback(int32_t offset);
     vector<Module *> &modules;
+    void SendCommand(MyCommand &command);
+    void ProcessCommandMsg(uint32_t from, String &msg);
 
 private:
     vector<MsgComm> buffSent;

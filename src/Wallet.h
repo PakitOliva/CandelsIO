@@ -8,8 +8,8 @@ class Wallet : public Module
 {
 
 public:
-    String Name(){return "Wallet";}
-    static String GetName(){return "Wallet";}
+    String Name() { return "Wallet"; }
+    static String GetName() { return "Wallet"; }
 
     int const PIN_GPIO;
     Timeout timeOut;
@@ -38,8 +38,8 @@ public:
 
     String UrlStatus() override
     {
-         String resultado = "/wallet.html?id=" + LocalDeviceID;
-        resultado.concat("&num=" + LocalModuleID);
+        String resultado = "/wallet.html?id=" + LocalDeviceID;
+        resultado += "&num=" + LocalModuleID;
         return resultado;
     }
 
